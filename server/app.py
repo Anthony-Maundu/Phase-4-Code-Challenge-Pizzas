@@ -81,6 +81,37 @@ def create_pizza():
 
     return pizza.to_dict(), 201
 
+@app.route('/restaurant_pizzas')
+def restaurant_pizzas():
+    restaurant_pizzas = RestaurantPizza.query.all()
+    return [restaurant_pizza.to_dict() for restaurant_pizza in restaurant_pizzas]
+@app.route('/restaurant_pizzas/<int:id>')
+def restaurant_pizza(id):
+    restaurant_pizza = RestaurantPizza.query.get(id)
+    if restaurant_pizza:
+        return restaurant_pizza.to_dict()
+    else:
+        return {'error': 'Restaurant Pizza not found'}, 404
+    
+@app.route('/restaurant_pizzas', methods=['POST'])
+def create_restaurant_pizza():
+    try:
+        data = request.get_json() if request.is_json else request.form
+        restaurant_pizzas = RestaurantPizza(**data)
+        db.session.add(restaurant_pizzas)
+        db.session.commit()
+        return make_response(restaurant_pizzas.to_dict(), 200)
+    except ValueError:
+        return make_response({"errors": ["validation errors"]}, 400)
+@app.route('/restaurant_pizzas/<int:id>', methods=['DELETE'])
+def delete_restaurant_pizza(id):
+    restaurant_pizza = RestaurantPizza.query.get(id)
+    if restaurant_pizza:
+        db.session.delete(restaurant_pizza)
+        db.session.commit()
+        return {'message': 'Restaurant Pizza deleted successfully'}
+    else:
+        return {'error': 'Restaurant Pizza not found'}, 404
 
 
 

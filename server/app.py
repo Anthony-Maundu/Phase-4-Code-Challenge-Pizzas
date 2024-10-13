@@ -30,7 +30,6 @@ def restaurants():
     response = [restaurant.to_dict(only=("id", "name", "address")) for restaurant in restaurants]
     return make_response(response, 200)
 
-
 @app.route('/restaurants/<int:id>')
 def restaurant(id):
     restaurant = Restaurant.query.filter_by(id=id).first()
@@ -40,7 +39,6 @@ def restaurant(id):
     else:
         return make_response({"error": "Restaurant not found"}, 404)
     
-
 @app.route('/restaurants/<int:id>', methods=['DELETE'])
 def delete_restaurant(id):
     restaurant = Restaurant.query.filter_by(id=id).first()
@@ -50,7 +48,7 @@ def delete_restaurant(id):
         return make_response({"message": "Restaurant deleted successfully"}, 204)
     else:
         return make_response({"error": "Restaurant not found"}, 404)
-
+    
 @app.route('/pizzas')
 def pizzas():
     pizzas = Pizza.query.all()
@@ -80,11 +78,12 @@ def create_pizza():
     db.session.commit()
 
     return pizza.to_dict(), 201
-
+    
 @app.route('/restaurant_pizzas')
 def restaurant_pizzas():
     restaurant_pizzas = RestaurantPizza.query.all()
     return [restaurant_pizza.to_dict() for restaurant_pizza in restaurant_pizzas]
+
 @app.route('/restaurant_pizzas/<int:id>')
 def restaurant_pizza(id):
     restaurant_pizza = RestaurantPizza.query.get(id)
@@ -103,6 +102,7 @@ def create_restaurant_pizza():
         return make_response(restaurant_pizzas.to_dict(), 200)
     except ValueError:
         return make_response({"errors": ["validation errors"]}, 400)
+    
 @app.route('/restaurant_pizzas/<int:id>', methods=['DELETE'])
 def delete_restaurant_pizza(id):
     restaurant_pizza = RestaurantPizza.query.get(id)
@@ -112,8 +112,6 @@ def delete_restaurant_pizza(id):
         return {'message': 'Restaurant Pizza deleted successfully'}
     else:
         return {'error': 'Restaurant Pizza not found'}, 404
-
-
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

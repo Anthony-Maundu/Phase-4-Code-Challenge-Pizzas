@@ -30,6 +30,7 @@ def restaurants():
     response = [restaurant.to_dict(only=("id", "name", "address")) for restaurant in restaurants]
     return make_response(response, 200)
 
+
 @app.route('/restaurants/<int:id>')
 def restaurant(id):
     restaurant = Restaurant.query.filter_by(id=id).first()
@@ -38,6 +39,18 @@ def restaurant(id):
         return make_response(response, 200)
     else:
         return make_response({"error": "Restaurant not found"}, 404)
+    
+
+@app.route('/restaurants/<int:id>', methods=['DELETE'])
+def delete_restaurant(id):
+    restaurant = Restaurant.query.filter_by(id=id).first()
+    if restaurant:
+        db.session.delete(restaurant)
+        db.session.commit()
+        return make_response({"message": "Restaurant deleted successfully"}, 204)
+    else:
+        return make_response({"error": "Restaurant not found"}, 404)
+
 
 
 

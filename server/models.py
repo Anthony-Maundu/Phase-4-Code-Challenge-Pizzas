@@ -1,3 +1,7 @@
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
+from sqlalchemy.orm import validates
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
 
 metadata = MetaData(naming_convention={
@@ -57,6 +61,23 @@ class RestaurantPizza(db.Model, SerializerMixin):
 
     # add serialization rules
     serialize_rules=('-restaurant.restaurant_pizzas', '-pizza.restaurant_pizzas',)
+    
 
+    # add validation
+    @validates('price')
+    def validate_price(self, key, price):
+        if price < 1 or price > 30:
+            raise ValueError('Price must be between 1 and 30')
+        return price
+    @validates('restaurant_id')
+    def validate_restaurant_id(self, key, restaurant_id):
+        if restaurant_id is None:
+            raise ValueError('Restaurant ID is required')
+        return restaurant_id
+    @validates('pizza_id')
+    def validate_pizza_id(self, key, pizza_id):
+        if pizza_id is None:
+            raise ValueError('Pizza ID is required')
+    
     def __repr__(self):
         return f'<RestaurantPizza ${self.price}>'

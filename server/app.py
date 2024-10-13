@@ -51,6 +51,35 @@ def delete_restaurant(id):
     else:
         return make_response({"error": "Restaurant not found"}, 404)
 
+@app.route('/pizzas')
+def pizzas():
+    pizzas = Pizza.query.all()
+    response = [pizza.to_dict(only=("id", "name", "ingredients")) for pizza in pizzas]
+    return make_response(response, 200)
+
+@app.route('/pizzas/<int:id>')
+def pizza(id):
+    pizza = Pizza.query.get(id)
+    if pizza:
+        return pizza.to_dict()
+    else:
+        return {'error': 'Pizza not found'}, 404
+    return make_response(pizza.to_dict(), 200)
+
+@app.route('/pizzas/<int:id>', methods=['POST'])
+def create_pizza():
+    data = request.get_json()
+    name = data.get('name')
+    ingredients = data.get('ingredients')
+
+    if not name or not ingredients:
+        return {'error': 'Missing required fields'}, 400
+
+    pizza = Pizza(name=name, ingredients=ingredients)
+    db.session.add(pizza)
+    db.session.commit()
+
+    return pizza.to_dict(), 201
 
 
 
